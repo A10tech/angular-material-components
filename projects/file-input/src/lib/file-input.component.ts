@@ -19,9 +19,9 @@ import {
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
-  CanUpdateErrorState,
+    _AbstractConstructor,
+    _ErrorStateTracker,
   ErrorStateMatcher,
-  mixinErrorState,
   ThemePalette,
 } from '@angular/material/core';
 import { MatFormFieldControl } from '@angular/material/form-field';
@@ -30,20 +30,6 @@ import { Subject } from 'rxjs';
 import { FileOrArrayFile } from './file-input-type';
 
 let nextUniqueId = 0;
-
-const _NgxMatInputMixinBase = mixinErrorState(
-  class {
-    readonly stateChanges = new Subject<void>();
-
-    constructor(
-      public _defaultErrorStateMatcher: ErrorStateMatcher,
-      public _parentForm: NgForm,
-      public _parentFormGroup: FormGroupDirective,
-      /** @docs-private */
-      public ngControl: NgControl,
-    ) {}
-  },
-);
 
 @Directive({
   selector: '[ngxMatFileInputIcon]',
@@ -70,16 +56,17 @@ export class NgxMatFileInputIcon {}
   imports: [MatIconModule, MatButtonModule],
 })
 export class NgxMatFileInputComponent
-  extends _NgxMatInputMixinBase
   implements
     MatFormFieldControl<FileOrArrayFile>,
     OnDestroy,
     DoCheck,
-    CanUpdateErrorState,
+    // CanUpdateErrorState,
     ControlValueAccessor
 {
   private _inputFileRef = viewChild<ElementRef>('inputFile');
   private _inputValueRef = viewChild<ElementRef>('inputValue');
+
+  private _errorStateTracker: _ErrorStateTracker;
 
   readonly color = input<ThemePalette>('primary');
 
@@ -91,7 +78,7 @@ export class NgxMatFileInputComponent
 
   readonly stateChanges: Subject<void> = new Subject<void>();
   focused: boolean = false;
-  errorState: boolean;
+//   errorState: boolean;
   controlType: string = 'ngx-mat-file-input';
   autofilled: boolean = false;
 
@@ -148,7 +135,21 @@ export class NgxMatFileInputComponent
   }
   protected _required = false;
 
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  // @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input()
+  get errorStateMatcher() {
+    return this._errorStateTracker.matcher;
+  }
+  set errorStateMatcher(value: ErrorStateMatcher) {
+    this._errorStateTracker.matcher = value;
+  }
+
+  get errorState() {
+    return this._errorStateTracker.errorState;
+  }
+  set errorState(value: boolean) {
+    this._errorStateTracker.errorState = value;
+  }
 
   @Input()
   get value(): FileOrArrayFile {
@@ -190,13 +191,23 @@ export class NgxMatFileInputComponent
     @Optional() _parentFormGroup: FormGroupDirective,
     _defaultErrorStateMatcher: ErrorStateMatcher,
   ) {
-    super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
-
     this.id = this.id;
 
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
+
+    this._errorStateTracker = new _ErrorStateTracker(
+        _defaultErrorStateMatcher,
+        ngControl,
+        _parentFormGroup,
+        _parentForm,
+        this.stateChanges,
+    );
+  }
+
+  updateErrorState() {
+    this._errorStateTracker.updateErrorState();
   }
 
   ngOnChanges() {
