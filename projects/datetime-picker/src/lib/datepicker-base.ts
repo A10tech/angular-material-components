@@ -385,10 +385,10 @@ export interface NgxMatDatepickerPanel<
 /** Base class for a datepicker. */
 @Directive()
 export abstract class NgxMatDatepickerBase<
-    C extends NgxMatDatepickerControl<D>,
-    S,
-    D = NgxExtractDateTypeFromSelection<S>,
-  >
+  C extends NgxMatDatepickerControl<D>,
+  S,
+  D = NgxExtractDateTypeFromSelection<S>,
+>
   implements NgxMatDatepickerPanel<C, S, D>, OnDestroy, OnChanges
 {
   private _scrollStrategy: () => ScrollStrategy;

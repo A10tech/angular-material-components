@@ -19,8 +19,8 @@ import {
 import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
-    _AbstractConstructor,
-    _ErrorStateTracker,
+  _AbstractConstructor,
+  _ErrorStateTracker,
   ErrorStateMatcher,
   ThemePalette,
 } from '@angular/material/core';
@@ -55,13 +55,9 @@ export class NgxMatFileInputIcon {}
   standalone: true,
   imports: [MatIconModule, MatButtonModule],
 })
+// CanUpdateErrorState,
 export class NgxMatFileInputComponent
-  implements
-    MatFormFieldControl<FileOrArrayFile>,
-    OnDestroy,
-    DoCheck,
-    // CanUpdateErrorState,
-    ControlValueAccessor
+  implements MatFormFieldControl<FileOrArrayFile>, OnDestroy, DoCheck, ControlValueAccessor
 {
   private _inputFileRef = viewChild<ElementRef>('inputFile');
   private _inputValueRef = viewChild<ElementRef>('inputValue');
@@ -78,7 +74,7 @@ export class NgxMatFileInputComponent
 
   readonly stateChanges: Subject<void> = new Subject<void>();
   focused: boolean = false;
-//   errorState: boolean;
+  //   errorState: boolean;
   controlType: string = 'ngx-mat-file-input';
   autofilled: boolean = false;
 
@@ -198,11 +194,11 @@ export class NgxMatFileInputComponent
     }
 
     this._errorStateTracker = new _ErrorStateTracker(
-        _defaultErrorStateMatcher,
-        ngControl,
-        _parentFormGroup,
-        _parentForm,
-        this.stateChanges,
+      _defaultErrorStateMatcher,
+      ngControl,
+      _parentFormGroup,
+      _parentForm,
+      this.stateChanges,
     );
   }
 

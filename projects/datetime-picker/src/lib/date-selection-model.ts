@@ -46,9 +46,10 @@ export interface NgxDateSelectionModelChange<S> {
  * @docs-private
  */
 @Injectable()
-export abstract class NgxMatDateSelectionModel<S, D = NgxExtractDateTypeFromSelection<S>>
-  implements OnDestroy
-{
+export abstract class NgxMatDateSelectionModel<
+  S,
+  D = NgxExtractDateTypeFromSelection<S>,
+> implements OnDestroy {
   private readonly _selectionChanged = new Subject<NgxDateSelectionModelChange<S>>();
 
   /** Emits when the selection has changed. */
